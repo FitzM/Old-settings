@@ -301,6 +301,7 @@ screen.connect_signal("arrange", function (s)
             c.border_width = 2
         else
             c.border_width = beautiful.border_width
+            c.useless_gaps = 20
         end
     end
 end)
@@ -630,6 +631,7 @@ globalkeys = my_table.join(
     awful.key({ altkey, "Control" }, "h", function () lain.util.useless_gaps_resize(-1) end,
               {description = "decrement useless gaps", group = "tag"}),
 
+
     -- Dynamic tagging
     awful.key({ modkey, "Shift" }, "n", function () lain.util.add_tag() end,
               {description = "add new tag", group = "tag"}),
@@ -683,12 +685,12 @@ globalkeys = my_table.join(
               {description = "dropdown application", group = "super"}),
 
     -- Widgets popups
-    --awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end,
-        --{description = "show calendar", group = "widgets"}),
-    --awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end,
-              --{description = "show filesystem", group = "widgets"}),
-    --awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end,
-              --{description = "show weather", group = "widgets"}),
+    awful.key({ altkey, }, "c", function () lain.widget.calendar.show(7) end,
+        {description = "show calendar", group = "widgets"}),
+    awful.key({ altkey, }, "h", function () if beautiful.fs then beautiful.fs.show(7) end end,
+              {description = "show filesystem", group = "widgets"}),
+    awful.key({ altkey, }, "w", function () if beautiful.weather then beautiful.weather.show(7) end end,
+              {description = "show weather", group = "widgets"}),
 
     -- Brightness
     awful.key({ }, "XF86MonBrightnessUp", function () os.execute("xbacklight -inc 10") end,
@@ -928,6 +930,7 @@ awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
       properties = { border_width = beautiful.border_width,
+                     useless_gaps = beautiful.useless_gaps,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
                      raise = true,
@@ -1030,7 +1033,13 @@ awful.rules.rules = {
     { rule = { class = "Vivaldi-stable" },
           properties = { maximized = false, floating = false } },
 
-    { rule = { class = "Vivaldi-stable" },
+    { rule = { class = "wps" },
+          properties = { maximized = false, floating = false } },
+
+    { rule = { class = "wps-write" },
+                      properties = { maximized = false, floating = false } },
+
+    { rule = { class = "wpspdf" },
           properties = { callback = function (c) c.maximized = false end } },
 
     --IF using Vivaldi snapshot you must comment out the rules above for Vivaldi-stable as they conflict
@@ -1137,20 +1146,20 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    awful.titlebar(c, {size = dpi(21)}) : setup {
+    awful.titlebar(c, {size = dpi(24)}) : setup {
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
             layout  = wibox.layout.fixed.horizontal
         },
-        { -- Middle
-            { -- Title
-                align  = "center",
-                widget = awful.titlebar.widget.titlewidget(c)
-            },
-            buttons = buttons,
-            layout  = wibox.layout.flex.horizontal
-        },
+        --{ -- Middle
+            --{ -- Title
+                --align  = "center",
+                --widget = awful.titlebar.widget.titlewidget(c)
+            --},
+            --buttons = buttons,
+            --layout  = wibox.layout.flex.horizontal
+        --},
         { -- Right
             awful.titlebar.widget.floatingbutton (c),
             awful.titlebar.widget.maximizedbutton(c),
@@ -1167,6 +1176,7 @@ end)
 --client.connect_signal("mouse::enter", function(c)
   --  c:emit_signal("request::activate", "mouse_enter", {raise = false})
 --end)
+
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
